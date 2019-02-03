@@ -107,7 +107,8 @@ class FailCheck(bases.TestCase):
     Pass Criteria
     -------------
 
-    This test fails, and a non-zero is passed back to shell running the test runner (devtester).
+    This test fails, and a non-zero is passed back to shell running the
+    test runner (devtester).
 
     Start Condition
     ---------------
@@ -183,6 +184,33 @@ def _raise_error():
     raise ValueError("Some bogus value.")
 
 
+class WithData(bases.TestCase):
+    """
+    Purpose
+    -------
+
+    Verify proper recording of data.
+
+    Pass Criteria
+    -------------
+
+    The data is recorded without error.
+
+    Procedure
+    ---------
+
+    #. Add some data with the record_data method.
+    """
+
+    def procedure(self):
+        self.info("Adding some data.")
+        self.record_data({"data": "dict"})
+        self.info("Adding some more data.")
+        self.record_data({"more": "data"})
+        return self.passed(
+            "Added data. There should be a list of two dicts in data output.")
+
+
 class DemoScenario(bases.Scenario):
     """A scenario that can be used to demonstrate framework features.
     """
@@ -196,6 +224,19 @@ class DemoScenario(bases.Scenario):
         ])
         if config.get("dofailure", False):
             suite.add_test(FailCheck)
+        return suite
+
+
+class PassFailErrorScenario(bases.Scenario):
+    """A scenario that can be used to demonstrate framework features.
+    """
+
+    @staticmethod
+    def get_suite(config, environment, ui):
+        suite = bases.TestSuite(config, environment, ui, name="DemoSuite")
+        suite.add_test(PassCheck)
+        suite.add_test(FailCheck)
+        suite.add_test(ErrorCheck)
         return suite
 
 # vim:ts=4:sw=4:softtabstop=0:smarttab
